@@ -6,9 +6,12 @@ const Home = () => {
   const [fetchError, setFetchError] = useState(null);
   const [smoothies, setSmoothies] = useState(null);
 
+  // Matches the property 'created_at' in the smoothies table
+  const [orderBy, setOrderBy] = useState("created_at");
+
   const handleDelete = (id) => {
     setSmoothies((prevSmoothies) => {
-      return prevSmoothies.filter((sm) => sm.id !== id);
+      return prevSmoothies.filter((smoothie) => smoothie.id !== id);
     });
   };
 
@@ -18,7 +21,8 @@ const Home = () => {
         // From 'smoothies' table
         .from("smoothies")
         // Fetch all data from the table
-        .select();
+        .select()
+        .order(orderBy, { ascending: false });
 
       if (error) {
         setFetchError("Could not fetch the smoothies");
@@ -32,14 +36,22 @@ const Home = () => {
     };
 
     fetchSmoothies();
-  }, []);
+  }, [orderBy]);
 
   return (
     <div className="page home">
       {fetchError && <p>{fetchError}</p>}
       {smoothies && (
         <div className="smoothies">
-          {/* order-by button */}
+          <div className="order-by">
+            <span>Order by: </span>
+            <button onClick={() => setOrderBy("created_at")}>
+              Time Created
+            </button>
+            <button onClick={() => setOrderBy("title")}>Title</button>
+            <button onClick={() => setOrderBy("rating")}>Rating</button>
+            {orderBy}
+          </div>
           <div className="smoothie-grid">
             {smoothies.map((smoothie) => (
               <SmoothieCard
